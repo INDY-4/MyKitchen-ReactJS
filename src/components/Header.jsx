@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom'; 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCartShopping } from "@fortawesome/free-solid-svg-icons";
+import { faUser } from "@fortawesome/free-regular-svg-icons"
+import { Routes, Route, Link } from "react-router-dom";
 
 const NavbarContainer = styled.div`
   display: flex;
@@ -47,10 +51,16 @@ function Header() {
     <NavbarContainer>
       <Span onClick={() => navigate('/')}>MyKitchen</Span>
       <div>
-        <Span onClick={() => navigate('/checkout')}>Cart</Span>
-        <Span onClick={toggleDropdown}>Profile</Span>
+        <Span onClick={() => navigate('/checkout')}>
+          <FontAwesomeIcon icon={faCartShopping} />
+        </Span>
+        <Span onClick={toggleDropdown}>
+          <FontAwesomeIcon icon={faUser} />
+        </Span>
         <DropdownMenu show={showDropdown}>
-          <DropdownItem onClick={() => navigate('/profile')}>Profile</DropdownItem>
+          <DropdownItem>
+            <Link to={`/profile`}>Profile</Link>
+          </DropdownItem>
           <DropdownItem onClick={() => navigate('/login')}>Log in / Log out</DropdownItem>
         </DropdownMenu>
       </div>
