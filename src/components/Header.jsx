@@ -58,9 +58,12 @@ function Header() {
           <FontAwesomeIcon icon={faUser} />
         </Span>
         <DropdownMenu show={showDropdown}>
+          {/*
           <DropdownItem>
             <Link to={`/profile`}>Profile</Link>
           </DropdownItem>
+          */}
+          <DropdownItem onClick={() => navigate('/profile')}>Profile</DropdownItem>
           <DropdownItem onClick={() => navigate('/login')}>Log in / Log out</DropdownItem>
         </DropdownMenu>
       </div>
