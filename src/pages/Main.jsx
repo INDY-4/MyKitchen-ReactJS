@@ -23,7 +23,7 @@ const SideBar = styled.aside`
 const MealTypeButton = styled.button`
   width: 100%;
   padding: 10px;
-  margin: 10px 0;
+  margin: 15px 0;
   cursor: pointer;
   border: 1px solid;
   border-radius: 10px;
@@ -82,8 +82,8 @@ const GoToKitchenButton = styled.button`
 const SeeMoreButton = styled.button`
   width: 40%;
   padding: 10px;
-  margin-left: 150px;
-  margin-top: 10px;
+  margin-left: 400px;
+  margin-top: 30px;
   cursor: pointer;
   border-radius: 10px;
   background: linear-gradient(180deg, rgb(233.09, 190.7, 85.18) 0%, rgb(255, 240.03, 202.74) 100%);
@@ -143,6 +143,8 @@ function Main() {
       <Header />
       <BodyContainer>
         <SideBar>
+          <br />
+          <br />
           Meal Type
           {['All', ...mealTypes].map((type) => (
             <MealTypeButton key={type} onClick={() => handleMealTypeClick(type)}>
