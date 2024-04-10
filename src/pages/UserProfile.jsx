@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
+import { useNavigate } from 'react-router-dom'; 
 
 const Container = styled.div`
   display: flex;
   justify-content: center;
   background: rgba(254, 250, 234, 0.70);
+  min-height: 84vh;
 `;
 
 const FormWrapper = styled.div`
@@ -58,8 +60,29 @@ const Button = styled.button`
   }
 `;
 
-function UserProfile() {
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 
+const ArrowButton = styled(Button)` 
+  &:before {
+    content: '→'; // Unicode right arrow
+    display: inline-block;
+  }
+`;
+
+function UserProfile() {
+  const navigate = useNavigate();
+  const handleSaveChanges = (event) => {
+    event.preventDefault();
+    // After make changes
+    alert("Your changes have been saved.");
+    navigate('/'); 
+};
+
+  {/*
   const formData = useState({
     user_id: 4,
     user_name: 'nick',
@@ -86,7 +109,8 @@ function UserProfile() {
     }
   }
   submitFormData();
-  
+  */}
+
   return (  
         <>
             <Header />
@@ -95,6 +119,7 @@ function UserProfile() {
                     <Title>User Profile</Title>
                     <Form>
                     <Column>
+                        {/*
                         <Label>Email</Label>
                         <Input
                           type="email"
@@ -109,6 +134,11 @@ function UserProfile() {
                           value={formData.user_name}
                           placeholder="Username"
                         />
+                        */}
+                        <Label>Email</Label>
+                        <Input type="email" placeholder="Email" />
+                        <Label>Username</Label>
+                        <Input type="text" placeholder="Username" />
                         <Label>Phone</Label>
                         <Input type="tel" placeholder="Phone" />
                         <Label>Password</Label>
@@ -129,7 +159,10 @@ function UserProfile() {
                         <Input type="text" placeholder="ZIP Code" />
                     </Column>
                     </Form>
-                    <Button type="submit">Save Changes</Button>
+                    <ButtonContainer>
+                      <Button onClick={handleSaveChanges}>Save Changes</Button>
+                      <ArrowButton onClick={() => navigate('/kitchen-profile')} />
+                    </ButtonContainer>                    
                 </FormWrapper>
             </Container>
             <Footer />
