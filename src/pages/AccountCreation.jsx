@@ -8,6 +8,7 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   background: rgba(254, 250, 234, 0.70);
+  min-height: 84vh;
 `;
 
 const FormWrapper = styled.div`
