@@ -82,7 +82,7 @@ const GoToKitchenButton = styled.button`
 const SeeMoreButton = styled.button`
   width: 40%;
   padding: 10px;
-  margin-left: 400px;
+  margin-left: 300px;
   margin-top: 30px;
   cursor: pointer;
   border-radius: 10px;
