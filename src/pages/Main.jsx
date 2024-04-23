@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
 
 const BodyContainer = styled.div`
   display: flex;
@@ -115,7 +116,34 @@ function Main() {
   const navigate = useNavigate();
   const [selectedMealType, setSelectedMealType] = useState('All');
   const [searchTerm, setSearchTerm] = useState('');
-  const [kitchens, setKitchens] = useState(initialKitchens);
+  // const [kitchens, setKitchens] = useState(initialKitchens);
+  const [kitchens, setKitchens] = useState([]);
+
+  useEffect(() => {
+    const kitchenIds = [1, 2];
+    const fetchKitchens = async () => {
+      try {
+        const requests = kitchenIds.map(id =>
+          axios.get(`https://indy-api.zoty.us/kitchens/select?id=${id}`)
+        );
+        // Waits for all of requests to complete
+        const responses = await Promise.all(requests);
+        const allKitchens = responses.map(response => {
+          // When the request was successful
+          if (response.status === 200) {
+            // Each response returns an array in data.data
+            return response.data.data[0];
+          } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        });
+        setKitchens(allKitchens);        
+      } catch (error) {
+        console.error('Error fetching kitchens:', error);
+      }
+    };
+    fetchKitchens();
+  }, []); // The empty dependency array ensures this effect runs only once on mount
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value.toLowerCase());
@@ -162,14 +190,13 @@ function Main() {
             />
           </SearchContainer>
           <KitchenList>
-            {filteredKitchens.map((kitchen, index) => (
+            {kitchens.map((kitchen, index) => (
               <KitchenCard key={index}>
                 <Image src={kitchen.img} alt="Kitchen" />
                 <KitchenInfo>
-                  <h3>{kitchen.name}</h3>
-                  <p>{kitchen.days}</p>
-                  <p>{kitchen.hours}</p>
-                  <p>{kitchen.phone}</p>
+                  <h3>{kitchen.kitchen_name}</h3>
+                  <p>{kitchen.kitchen_working_hours}</p>
+                  <p>Phone: 123-456-7890</p>
                 </KitchenInfo>
                 <GoToKitchenButton onClick={() => navigate('/kitchen-page')}>Go to kitchen</GoToKitchenButton>
               </KitchenCard>
