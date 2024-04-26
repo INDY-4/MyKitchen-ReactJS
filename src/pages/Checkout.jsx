@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 
@@ -105,15 +105,13 @@ const CheckoutBar = styled.div`
 `;
 
 const CheckoutPage = () => {
-  const [items, setItems] = useState([
-    { name: 'Pineapple Pizza', price: 12.99, quantity: 1 },
-    { name: 'Mint Chocolate Pizza', price: 13.99, quantity: 1 },
-  ]);
+  const location = useLocation();
+  const [items, setItems] = useState(location.state ? location.state.items : []);
 
-  const handleQuantityChange = (index, delta) => {
+  const handleQuantityChange = (index, qty) => {
     setItems(currentItems =>
       currentItems.map((item, i) =>
-        i === index ? { ...item, quantity: item.quantity + delta } : item
+        i === index ? { ...item, quantity: Math.max(0, item.quantity + qty) } : item
       )
     );
   };
@@ -121,6 +119,10 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const handleBack = () => {
     navigate(-1);
+  };
+
+  const handlePayment = () => {
+    navigate('/payment', { state: { items, total } });
   };
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -137,17 +139,17 @@ const CheckoutPage = () => {
               <BackButton onClick={handleBack}>←</BackButton>
               <Title>Order Summary</Title>
               <ItemList>
-                  {items.map((item, index) => (
+                {items.map((item, index) => (
                   <Item key={index}>
-                      <div>{index + 1}. {item.name}</div>
-                      <Price>${item.price.toFixed(2)}</Price>
-                      <QuantitySelector>
-                          <QuantityButton onClick={() => handleQuantityChange(index, -1)}>-</QuantityButton>
-                          <Quantity>{item.quantity}</Quantity>
-                          <QuantityButton onClick={() => handleQuantityChange(index, 1)}>+</QuantityButton>
-                      </QuantitySelector>
+                    <div>{index + 1}. {item.name}</div>
+                    <Price>${item.price.toFixed(2)}</Price>
+                    <QuantitySelector>
+                      <QuantityButton onClick={() => handleQuantityChange(index, -1)}>-</QuantityButton>
+                      <Quantity>{item.quantity}</Quantity>
+                      <QuantityButton onClick={() => handleQuantityChange(index, 1)}>+</QuantityButton>
+                    </QuantitySelector>
                   </Item>
-                  ))}
+                ))}
               </ItemList>
               <Summary>
                   <TotalLine>
@@ -168,7 +170,7 @@ const CheckoutPage = () => {
                   </TotalLine>
               </Summary>
               <CheckoutBarContainer>
-                <CheckoutBar onClick={() => navigate('/payment')}>Payment</CheckoutBar>
+                <CheckoutBar onClick={handlePayment}>Payment</CheckoutBar>
               </CheckoutBarContainer>
             </ContentWrapper>
         </PageContainer>

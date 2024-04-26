@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
+import axios from 'axios';
+
 
 const PageContainer = styled.div`
   display: flex;
@@ -10,7 +12,7 @@ const PageContainer = styled.div`
   align-items: flex-start;
   padding: 20px;
   background: rgba(254, 250, 234, 0.70);
-  height: 80vh;
+  height: 100vh;
 `;
 
 const OrderSummary = styled.div`
@@ -73,29 +75,58 @@ const Input = styled.input`
 `;
 
 const PaymentPage = () => {
+  const { state } = useLocation();
   const navigate = useNavigate();
+  const [items, setItems] = useState(state?.items || []);
+  const [total, setTotal] = useState(state?.total || 0);
+
+  useEffect(() => {
+    if (!items.length) {
+      // Redirect to kitchen page if no items are found 
+      navigate('/kitchen');
+    }
+  }, [items, navigate]);
+
+  const makeOrder = async () => {
+    const formData = new FormData();
+    formData.append('order_kitchen_id', 1);
+    formData.append('order_user_id', 1);
+    formData.append('order_products', JSON.stringify(items.map(item => ({
+      product_id: item.id, 
+      product_price: item.price 
+    }))));
+    formData.append('order_total', total);
+    formData.append('order_status', 'payment_waiting');
+  
+    try {
+      const response = await axios.post('https://indy-api.zoty.us/orders/create', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      navigate('/order-confirmation', { state: { orderDetails: response.data } });
+    } catch (error) {
+      console.error('Error creating the order:', error);
+    }
+  };
 
   return (
     <>
       <Header />
       <PageContainer>
         <OrderSummary>
-          <h2>Artichoke Basille’s Pizza</h2>
+          <h2>Nick's Home Cooking</h2>
+          {items.map((item, index) => (
+            <SummaryItem key={index}>
+              <span>{item.name}</span>
+              <span>${item.price.toFixed(2)} x {item.quantity}</span>
+            </SummaryItem>
+          ))}
           <SummaryItem>
             <span>Subtotal</span>
-            <span>$ 26.98</span>
-          </SummaryItem>
-          <SummaryItem>
-            <span>Tax</span>
-            <span>$ 1.35</span>
-          </SummaryItem>
-          <SummaryItem>
-            <span>Service Fee</span>
-            <span>$ 2.99</span>
+            <span>$ {total.toFixed(2)}</span>
           </SummaryItem>
           <SummaryItem>
             <span>Total</span>
-            <span>$ 31.32</span>
+            <span>$ {total.toFixed(2)}</span>
           </SummaryItem>
         </OrderSummary>
         <FormSection>
@@ -118,7 +149,7 @@ const PaymentPage = () => {
             <Label>CVC</Label>
             <Input type="text" placeholder="CVC" />
           </FormItem>
-          <PayButton onClick={() => navigate('/order-confirmation')}>Pay $ 31.32</PayButton>
+          <PayButton onClick={makeOrder}>Pay $ {total.toFixed(2)}</PayButton>
         </FormSection>
       </PageContainer>
       <Footer /> 

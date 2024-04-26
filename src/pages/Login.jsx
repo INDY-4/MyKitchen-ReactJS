@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
+import axios from 'axios';
 
 const Container = styled.div`
   display: flex;
@@ -91,10 +92,20 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  const userData = {
+    email: "merrick@email.com",
+    password: "merrick1234"
+  };
+
   const handleLogin = (event) => {
     event.preventDefault();
-    alert("Login Successful !");
-    navigate('/'); 
+    // Simulate login with dummy data
+    if (email === userData.email && password === userData.password) {
+      alert("Login Successful !");
+      navigate('/'); 
+    } else {
+      alert("Login Failed: Incorrect email or password.");
+    }
   };
 
   return (

@@ -105,12 +105,6 @@ const Image = styled.img`
 
 
 const mealTypes = ['American', 'Italian', 'Mexican', 'Asian', 'Home Cooked'];
-const initialKitchens = [
-  { img: '/images/pizzamain.jpeg', name: "Artichoke Basille's Pizza", days: 'Mon - Sun', hours: '10 AM - 10 PM', phone: '(212) 228-2004', type: 'American' },
-  { img: '/images/thaimain.jpeg', name: 'Thai Ruby', days: 'Mon - Sat', hours: '11 AM - 9 PM', phone: '(234) 567-8901', type: 'Asian' },
-  { img: '/images/homecookmain.jpeg', name: "Nick's Home Cooking", days: 'Mon - Fri', hours: '8 AM - 8 PM', phone: '(345) 678-9012', type: 'Home Cooked' },
-];
-
 
 function Main() {
   const navigate = useNavigate();
@@ -192,7 +186,7 @@ function Main() {
           <KitchenList>
             {kitchens.map((kitchen, index) => (
               <KitchenCard key={index}>
-                <Image src={kitchen.img} alt="Kitchen" />
+                <Image src={`/images/kitchen${index + 1}.jpeg`} alt="Kitchen" />
                 <KitchenInfo>
                   <h3>{kitchen.kitchen_name}</h3>
                   <p>{kitchen.kitchen_working_hours}</p>

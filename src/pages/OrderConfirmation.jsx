@@ -7,7 +7,7 @@ import Footer from '../components/Footer.jsx';
 const Container = styled.div`
   text-align: center;
   background: rgba(254, 250, 234, 1);
-  height: 80vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -62,10 +62,7 @@ const OrderConfirmationPage = () => {
       <Container>
         <CheckMarkContainer>✔</CheckMarkContainer>
         <ConfirmationMessage>Thank you for your order.</ConfirmationMessage>
-        <DeliveryAddress>Deliver to: 1100 South Marietta Pkwy SE, Marietta, GA 30060</DeliveryAddress>
-        <GoogleMapsLink>
-          Google maps Link
-        </GoogleMapsLink>
+        <DeliveryAddress>Deliver to: 1000 Chastain Rd NW, Kennesaw, GA 30144</DeliveryAddress>
         <DiscoverButton onClick={() => navigate('/')}>
           Discover new kitchens
         </DiscoverButton>

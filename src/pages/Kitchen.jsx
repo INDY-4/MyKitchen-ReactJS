@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
 
 const PageContainer = styled.div`
     background: rgba(254, 250, 234, 0.70);
@@ -121,9 +122,46 @@ const CheckoutBar = styled.div`
 
 const KitchenPage = () => {
   const navigate = useNavigate();
-  const [pineapplePizzaQuantity, setPineapplePizzaQuantity] = useState(0);
-  const [mintChocolatePizzaQuantity, setMintChocolatePizzaQuantity] = useState(0);
-  const [bobaPizzaQuantity, setBobaPizzaQuantity] = useState(0);
+  const [products, setProducts] = useState([]);
+  const [quantities, setQuantities] = useState({});
+
+  useEffect(() => {
+    axios.get('https://indy-api.zoty.us/products/select?kitchen_id=1')
+      .then(response => {
+        if(response.data.status === 1) {
+          setProducts(response.data.data);
+          // Initialize quantities for each product
+          const initialQuantities = {};
+          response.data.data.forEach(product => {
+            initialQuantities[product.product_id] = 0;
+          });
+          setQuantities(initialQuantities);
+        }
+      })
+      .catch(error => {
+        console.error('There was an error!', error);
+      });
+  }, []);
+
+  // Function to update quantity
+  const updateQuantity = (productId, qty) => {
+    setQuantities(prevQuantities => ({
+      ...prevQuantities,
+      [productId]: Math.max(prevQuantities[productId] + qty, 0)
+    }));
+  };
+
+  const handleCheckout = () => {
+    const itemsToCheckout = products.map(product => {
+      return {
+        name: product.product_title,
+        price: parseFloat(product.product_price),
+        quantity: quantities[product.product_id],
+      };
+    }).filter(item => item.quantity > 0); // This will filter out items with 0 quantity
+    navigate('/checkout', { state: { items: itemsToCheckout } });
+  };
+  
 
   return (
     <>
@@ -131,59 +169,36 @@ const KitchenPage = () => {
         <PageContainer>
             <HeaderInfo>
                 <KitchenInfo>
-                    <Title>Artichoke Basille's Pizza</Title>
-                    <SubText>Mon - Fri 10:00 AM - 10:00 PM</SubText>
-                    <SubText>Artichoke's slices are more like a meal than most of the traditional variety, but its most memorable difference is texture. </SubText>
+                    <Title>Nick's Home Cooking</Title>
+                    <SubText>Mon - Fri 08:00 AM - 08:00 PM</SubText>
+                    <SubText>Nick's homeCooked meals are delicious & family-friendly. </SubText>
                 </KitchenInfo>
                 <ContactInfo>
-                    <SubText>Phone (212) 228-2004</SubText>
+                    <SubText>Phone (123) 456-7890</SubText>
                     <SubText>Address</SubText>
-                    <SubText>328 E 14th St, New York, NY 10003</SubText>
+                    <SubText>1100 South Marietta Pkwy SE, Marietta, GA 30060</SubText>
                 </ContactInfo>
             </HeaderInfo>
             <ProductList>
-                <Product>
-                <ImageHolder backgroundImage="/images/pineapple.jpeg "/>
-                <ProductInfo>
-                    <ProductTitle>Pineapple Pizza</ProductTitle>
-                    <ProductDescription>Delicious pineapple with ham and cheese</ProductDescription>
-                </ProductInfo>
-                <Price>$ 12.99</Price>
-                <QuantitySelector>
-                  <QuantityButton onClick={() => setPineapplePizzaQuantity(pineapplePizzaQuantity - 1)}>-</QuantityButton>
-                  <Quantity>{pineapplePizzaQuantity}</Quantity>
-                  <QuantityButton onClick={() => setPineapplePizzaQuantity(pineapplePizzaQuantity + 1)}>+</QuantityButton>
-                </QuantitySelector>
-                </Product>
-                <Product>
-                <ImageHolder backgroundImage="/images/mintchocolate.jpeg "/>
-                <ProductInfo>
-                    <ProductTitle>Mint Chocolate Pizza</ProductTitle>
-                    <ProductDescription>Peppermint's fierceness compliments dark chocolate. They produce a robust, well-rounded hit of deep flavor.</ProductDescription>
-                </ProductInfo>
-                <Price>$ 13.99</Price>
-                <QuantitySelector>
-                  <QuantityButton onClick={() => setMintChocolatePizzaQuantity(mintChocolatePizzaQuantity - 1)}>-</QuantityButton>
-                  <Quantity>{mintChocolatePizzaQuantity}</Quantity>
-                  <QuantityButton onClick={() => setMintChocolatePizzaQuantity(mintChocolatePizzaQuantity + 1)}>+</QuantityButton>
-                </QuantitySelector>
-                </Product>
-                <Product>
-                <ImageHolder backgroundImage="/images/boba.jpeg "/>
-                <ProductInfo>
-                    <ProductTitle>Boba Pizza</ProductTitle>
-                    <ProductDescription>Mythical Taiwan exclusive boba pizza</ProductDescription>
-                </ProductInfo>
-                <Price>$ 14.99</Price>
-                <QuantitySelector>
-                  <QuantityButton onClick={() => setBobaPizzaQuantity(bobaPizzaQuantity - 1)}>-</QuantityButton>
-                  <Quantity>{bobaPizzaQuantity}</Quantity>
-                  <QuantityButton onClick={() => setBobaPizzaQuantity(bobaPizzaQuantity + 1)}>+</QuantityButton>
-                </QuantitySelector>
-                </Product>
-            </ProductList>
+          {products.map(product => (
+            <Product key={product.product_id}>
+              <ImageHolder backgroundImage={product.product_image_url} />
+              <ProductInfo>
+                <ProductTitle>{product.product_title}</ProductTitle>
+                <ProductDescription>{product.product_desc}</ProductDescription>
+              </ProductInfo>
+              <Price>$ {product.product_price}</Price>
+              <QuantitySelector>
+                <QuantityButton onClick={() => updateQuantity(product.product_id, -1)}>-</QuantityButton>
+                <Quantity>{quantities[product.product_id]}</Quantity>
+                <QuantityButton onClick={() => updateQuantity(product.product_id, 1)}>+</QuantityButton>
+              </QuantitySelector>
+            </Product>
+          ))}
+        </ProductList>
             <CheckoutBarContainer>
-              <CheckoutBar onClick={() => navigate('/checkout')}>Checkout</CheckoutBar>
+              <CheckoutBar onClick={handleCheckout}>Checkout</CheckoutBar>
+              
             </CheckoutBarContainer>
         </PageContainer>
         <Footer />

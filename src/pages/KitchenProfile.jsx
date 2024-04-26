@@ -3,17 +3,19 @@ import styled from 'styled-components';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Container = styled.div`
   display: flex;
   justify-content: space-between;
   background: rgba(254, 250, 234, 0.70);
   padding: 20px;
-  height: 90vh;
+  height: 100vh;
 `;
 
 const Section = styled.section`
   display: flex;
+  flex: 1;
   flex-direction: column;
   width: 48%;
 `;
@@ -23,6 +25,7 @@ const InputGroup = styled.div`
   flex-direction: column;
   margin-bottom: 25px;
   gap: 10px;
+  width: 95%;
 `;
 
 const Label = styled.label`
@@ -64,6 +67,7 @@ const MenuSection = styled.div`
 const MenuItem = styled.div`
   display: flex;
   justify-content: space-between;
+  margin-top: 20px;
   margin-bottom: 10px;
 `;
 
@@ -74,8 +78,8 @@ const DescriptionInput = styled(Input)`
 const SaveButtonContainer = styled.div`
   display: flex;
   justify-content: center; 
-  padding-top: 20px; 
-  padding-botton: 0;
+  padding: 20px 0;
+  margin-top: auto; 
 `;
 
 const SaveButton = styled(Button)`
@@ -86,76 +90,143 @@ const SaveButton = styled(Button)`
   }
 `;
 
+const ImageContainer = styled.div`
+  display: flex;
+  width: 50%;
+  flex-direction: column;
+  margin-bottom: 25px;
+  gap: 10px;
+`;
+
 function KitchenProfile() {
   const navigate = useNavigate();
+  const [selectedImage, setSelectedImage] = useState(null);
+  const kitchenId = 1;
 
-  {/*
-  const [kitchenDetails, setKitchenDetails] = useState({
-    name: '',
-    description: '',
-    hours: '',
-    phone: '',
-    address: '',
-  });
+  const handleImageChange = async (event) => {
+    event.preventDefault();
+  
+    if (selectedImage) {
+      const input = { kitchenId, selectedImage };
+      const [data, error] = await updateImage('url', input);
+  
+      if (error) {
+        console.error('Error uploading image:', error);
+      } else {
+        console.log('Image uploaded successfully:', data);
+      }
+    } else {
+      console.error('No image selected');
+    }
+  };
 
-  const [image, setImage] = useState(null);
+  const updateImage = async (url, input) => {
+    try {
+        const formData = new FormData();
+        formData.append('kitchen_id', input.kitchenId)
+        formData.append('product_image', input.selectedImage)
+
+        const response = await fetch(url, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        return [data, null];
+      } catch (error) {
+        console.error(error);
+        return [null, error];
+      }
+  }
+  
+
+{/*
+  const handleSaveChanges = async (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    const formData = new FormData();
+    formData.append('kitchen_name', kitchenDetails.name);
+    formData.append('kitchen_working_hours', JSON.stringify(kitchenDetails.hours)); 
+
+    // If a new main image was selected, append it to the FormData
+    if (selectedImage) {
+      formData.append('mainImage', selectedImage);
+    }
+
+    // Make an API call to update the kitchen profile
+    try {
+      const response = await axios.post(`https://indy-api.zoty.us/kitchens/select?id=${id}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      if (response.status === 200) {
+        console.log('Kitchen updated successfully!');
+        navigate('/');
+      } else {
+        console.error('Failed to update kitchen', response.data);
+      }
+    } catch (error) {
+      console.error('Error updating kitchen:', error);
+    }
+  };
   */}
 
 
-  return (
+return (
     <>
-        <Header />
-        <Container>
-            <Section>
-                <InputGroup>
-                    <Label>Kitchen name</Label>
-                    <Input type="text" defaultValue="Artichoke Basille's Pizza" />
-                </InputGroup>
-                <InputGroup>
-                    <Label>Description</Label>
-                    <TextArea defaultValue="Since opening their first store in New York City’s East Village in 2008, Artichoke Basille’s Pizza has expanded to eighteen hugely successful locations across the country. They have always impressed critics, fellow chefs, and chowhounds alike." />
-                </InputGroup>
-                <InputGroup>
-                    <Label>Main Image</Label>
-                    <Button as="input" type="file" onChange={handleImageChange} />
-                </InputGroup>
-                <Button>Add menu</Button>
-                <MenuSection>
-                <MenuItem>
-                    <Input type="text" placeholder="Item name" />
-                    <DescriptionInput type="text" placeholder="Description" />
-                    <Input type="text" placeholder="Price" style={{ width: '100px' }} />
-                    <Button>Select Image</Button>
-                    <Button>Remove</Button>
-                </MenuItem>
-                <MenuItem>
-                    <Input type="text" placeholder="Item name" />
-                    <DescriptionInput type="text" placeholder="Description" />
-                    <Input type="text" placeholder="Price" style={{ width: '100px' }} />
-                    <Button>Select Image</Button>
-                    <Button>Remove</Button>
-                </MenuItem>
-                </MenuSection>
-                <SaveButtonContainer>
-                  <SaveButton onClick={() => navigate('/')}>Save Changes</SaveButton>
-                </SaveButtonContainer>
-            </Section>
-            <Section>
-                <InputGroup>
-                    <Label>Open hours</Label>
-                    <Input type="text" defaultValue="Mon-Sun 10:00 AM - 10:00 PM" />
-                </InputGroup>
-                <InputGroup>
-                    <Label>Phone</Label>
-                    <Input type="tel" defaultValue="(212) 228-2004" />
-                </InputGroup>
-                <InputGroup>
-                    <Label>Address</Label>
-                    <Input type="text" defaultValue="328 E 14th St, New York, NY 10003" />
-                </InputGroup>
-            </Section>
-        </Container>
-        <Footer />
+      <Header />
+      <Container>
+        <Section>
+          <InputGroup>
+            <Label>Kitchen name</Label>
+            <Input type="text" placeholder="Enter kitchen name" />
+          </InputGroup>
+          <InputGroup>
+            <Label>Description</Label>
+            <Input type="text" placeholder="Enter kitchen description" />
+          </InputGroup>
+          <ImageContainer>
+            <Label htmlFor="imageInput">Main Image</Label>
+            <Button as="input" id="imageInput" type="file" onChange={handleImageChange} />
+          </ImageContainer>
+          <MenuSection>
+            <Label>Kitchen Menu&emsp;</Label>
+            <Button>Add menu</Button>
+            <MenuItem>
+              <Input type="text" placeholder="Item name" />
+              <DescriptionInput type="text" placeholder="Description" />
+              <Input type="text" placeholder="Price" style={{ width: '100px' }} />
+              <Button as="input" type="file" onChange={handleImageChange} />
+              <Button>Remove</Button>
+            </MenuItem>
+            <MenuItem>
+              <Input type="text" placeholder="Item name" />
+              <DescriptionInput type="text" placeholder="Description" />
+              <Input type="text" placeholder="Price" style={{ width: '100px' }} />
+              <Button as="input" type="file" onChange={handleImageChange} />
+              <Button>Remove</Button>
+            </MenuItem>
+          </MenuSection>
+        </Section>
+        <Section>
+          <InputGroup>
+            <Label>Open hours</Label>
+            <Input type="text" placeholder="Enter open hours" />
+          </InputGroup>
+          <InputGroup>
+            <Label>Phone</Label>
+            <Input type="tel" placeholder="Enter phone number" />
+          </InputGroup>
+          <InputGroup>
+            <Label>Address</Label>
+            <Input type="text" placeholder="Enter kitchen address" />
+          </InputGroup>
+        </Section>
+        <SaveButtonContainer>
+          <SaveButton onClick={() => navigate('/')}>Save Changes</SaveButton>
+        </SaveButtonContainer>
+      </Container>
+      <Footer />
     </>
   );
 }
