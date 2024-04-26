@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
@@ -9,7 +9,7 @@ const Container = styled.div`
   justify-content: space-between;
   background: rgba(254, 250, 234, 0.70);
   padding: 20px;
-  height: 80vh;
+  height: 90vh;
 `;
 
 const Section = styled.section`
@@ -21,7 +21,8 @@ const Section = styled.section`
 const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
+  gap: 10px;
 `;
 
 const Label = styled.label`
@@ -74,6 +75,7 @@ const SaveButtonContainer = styled.div`
   display: flex;
   justify-content: center; 
   padding-top: 20px; 
+  padding-botton: 0;
 `;
 
 const SaveButton = styled(Button)`
@@ -87,6 +89,19 @@ const SaveButton = styled(Button)`
 function KitchenProfile() {
   const navigate = useNavigate();
 
+  {/*
+  const [kitchenDetails, setKitchenDetails] = useState({
+    name: '',
+    description: '',
+    hours: '',
+    phone: '',
+    address: '',
+  });
+
+  const [image, setImage] = useState(null);
+  */}
+
+
   return (
     <>
         <Header />
@@ -99,6 +114,10 @@ function KitchenProfile() {
                 <InputGroup>
                     <Label>Description</Label>
                     <TextArea defaultValue="Since opening their first store in New York City’s East Village in 2008, Artichoke Basille’s Pizza has expanded to eighteen hugely successful locations across the country. They have always impressed critics, fellow chefs, and chowhounds alike." />
+                </InputGroup>
+                <InputGroup>
+                    <Label>Main Image</Label>
+                    <Button as="input" type="file" onChange={handleImageChange} />
                 </InputGroup>
                 <Button>Add menu</Button>
                 <MenuSection>
